@@ -1,0 +1,17 @@
+name: test
+version: '1.0-SNAPSHOT'
+main: me.david.test.Test
+api-version: '1.21'
+commands:
+    machtklinge:
+        description: Gibt Dir die mächtige Machtklinge
+        usage: /machtklinge
+    donneraxt:
+        description: Gibt Dir die mächtige Donneraxt
+        usage: /donneraxt
+    hirsch:
+        description: Erzeugt einen Hirsch
+        usage: /hirsch
+    horde:
+        description: Erzeugt eine Horde
+        usage: /horde

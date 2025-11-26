@@ -1,0 +1,182 @@
+{
+  "entity.warden.ambient": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/ambient",
+        "volume": 2.0
+      }
+    ]
+  },
+  "entity.warden.heartbeat": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/silence",
+        "volume": 1.0
+      }
+    ]
+  },
+  "entity.warden.step": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/silence",
+        "volume": 1.0
+      }
+    ]
+  },
+  "entity.warden.nearby_close": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/silence",
+        "volume": 1.0
+      }
+    ]
+  },
+  "entity.warden.nearby_closer": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/silence",
+        "volume": 1.0
+      }
+    ]
+  },
+  "entity.warden.nearby_closest": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/roar",
+        "volume": 2.0
+      }
+    ]
+  },
+  "entity.warden.roar": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/roar",
+        "volume": 2.0
+      }
+    ]
+  },
+  "entity.warden.angry": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/silence",
+        "volume": 1.0
+      }
+    ]
+  },
+  "entity.warden.agitated": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/silence",
+        "volume": 1.0
+      }
+    ]
+  },
+  "entity.warden.attack_impact": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/silence",
+        "volume": 1.0
+      }
+    ]
+  },
+  "entity.warden.dig": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/silence",
+        "volume": 1.0
+      }
+    ]
+  },
+  "entity.warden.emerge": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/silence",
+        "volume": 1.0
+      }
+    ]
+  },
+  "entity.warden.hurt": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/roar",
+        "volume": 1.0
+      }
+    ]
+  },
+  "entity.warden.death": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/roar",
+        "volume": 2.0
+      }
+    ]
+  },
+  "entity.warden.listening": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/silence",
+        "volume": 1.0
+      }
+    ]
+  },
+  "entity.warden.listening_angry": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/silence",
+        "volume": 1.0
+      }
+    ]
+  },
+  "entity.warden.sniff": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/silence",
+        "volume": 1.0
+      }
+    ]
+  },
+  "entity.warden.sonic_charge": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/silence",
+        "volume": 1.0
+      }
+    ]
+  },
+  "entity.warden.sonic_boom": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/silence",
+        "volume": 1.0
+      }
+    ]
+  },
+  "entity.warden.tendril_clicks": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:hirsch/silence",
+        "volume": 1.0
+      }
+    ]
+  }
+}
