@@ -7,6 +7,8 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,6 +32,14 @@ import org.bukkit.entity.Shulker;
 import org.bukkit.entity.Vindicator;
 import org.bukkit.entity.Zombie;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Shulker;
+import org.bukkit.entity.Slime;
+import org.bukkit.entity.Phantom;
+import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Wither;
+import org.bukkit.entity.Chicken;
+import org.bukkit.entity.Entity;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
@@ -55,6 +65,8 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
         getCommand("machtklinge").setExecutor(this);
         getCommand("donneraxt").setExecutor(this);
         getCommand("hirsch").setExecutor(this);
+        getCommand("horde").setExecutor(this);
+        getCommand("reset").setExecutor(this);
 
         // Events registrieren
         getServer().getPluginManager().registerEvents(this, this);
@@ -86,44 +98,20 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
         }
 
         if (cmd.getName().equalsIgnoreCase("hirsch")) {
-            // Zielposition: 5 Blöcke (≈ Meter) in Blickrichtung
-            Vector dir = p.getLocation().getDirection().normalize().multiply(5);
-            var spawnLoc = p.getLocation().clone().add(dir);
-            spawnLoc.setY(Math.floor(spawnLoc.getY())); // auf Blockhöhe
-
-            var world = p.getWorld();
-            var ent = world.spawnEntity(spawnLoc, EntityType.WARDEN);
-            if (!(ent instanceof Warden warden)) {
-                p.sendMessage("Konnte keinen Warden spawnen.");
-                return true;
-            }
-
-            // Name + Sichtbarkeit
-            warden.customName(Component.text("Hirsch", NamedTextColor.DARK_GREEN));
-            warden.setCustomNameVisible(true);
-
-            // Standard-Sounds NICHT unterdrücken
-            warden.setSilent(false);
-
-            // Attribute anpassen (Beispiele – tune nach Wunsch)
-            warden.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(3.5);
-            warden.getAttribute(Attribute.ATTACK_DAMAGE).setBaseValue(15.0);
-            warden.getAttribute(Attribute.FOLLOW_RANGE).setBaseValue(32.0);
-            warden.getAttribute(Attribute.KNOCKBACK_RESISTANCE).setBaseValue(1.0);
-
+            spawnHirsch(p);
             p.sendMessage(Component.text("HAHAHAHAHAHAHAHAHAHA! ICH WERDE DICH TÖTEN.", NamedTextColor.RED));
         }
 
         if (cmd.getName().equalsIgnoreCase("horde")) {
             World world = p.getWorld();
-            Location base = p.getLocation().add(p.getLocation().getDirection().normalize().multiply(30));
+            Location base = p.getLocation().add(p.getLocation().getDirection().normalize().multiply(15));
             java.util.Random rnd = new java.util.Random();
             java.util.List<java.util.UUID> tracked = new java.util.ArrayList<>();
 
             // zufällige Boden-Position nahe der Basis
             java.util.function.Supplier<Location> randLoc = () -> {
-                int x = base.getBlockX() + rnd.nextInt(17) - 8;
-                int z = base.getBlockZ() + rnd.nextInt(17) - 8;
+                int x = base.getBlockX() + rnd.nextInt(11) - 5;
+                int z = base.getBlockZ() + rnd.nextInt(11) - 5;
                 int y = world.getHighestBlockYAt(x, z) + 1;
                 return new Location(world, x + 0.5, y, z + 0.5);
             };
@@ -155,30 +143,122 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
                 tracked.add(s.getUniqueId());
             }
 
+            // 5 Hirsche
+            for (int i = 0; i < 5; i++) {
+                spawnHirsch(p);
+            }
+
+            // Uhrzeit auf Nacht setzen
+            world.setTime(18000); // 18000 = Mitternacht
+            world.setStorm(false);
+            world.setThundering(false);
+            world.setWeatherDuration(0);
+
+            // Statt Bäume anzünden: Dramatische Effekte ohne Zerstörung
+            Location playerLoc = p.getLocation();
+            int radius = 30;
+            java.util.List<Block> placedLights = new java.util.ArrayList<>();
+            for (int i = 0; i < 50; i++) {
+                int x = playerLoc.getBlockX() + rnd.nextInt(radius * 2) - radius;
+                int z = playerLoc.getBlockZ() + rnd.nextInt(radius * 2) - radius;
+                int y = world.getHighestBlockYAt(x, z) + 1;
+                Block block = world.getBlockAt(x, y, z);
+                if (block.getType() == Material.AIR) {
+                    // Unsichtbarer Lichtblock (Level 15 = maximale Helligkeit)
+                    block.setType(Material.LIGHT);
+                    if (block.getBlockData() instanceof org.bukkit.block.data.type.Light lightData) {
+                        lightData.setLevel(15);
+                        block.setBlockData(lightData);
+                    }
+                    placedLights.add(block);
+                }
+            }
+
+            // Explosions-Sounds für Drama
+            world.playSound(playerLoc, Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 0.5f);
+
             p.sendMessage(ChatColor.DARK_RED + "Die Horde kommt!");
 
             // Grausame Musik bis alle tot sind
+            // Boss-Musik starten
+            p.playSound(p.getLocation(), "custom.ambient", SoundCategory.RECORDS, 1.0f, 1.0f);
             new BukkitRunnable() {
-                int tick = 0;
-                @Override public void run() {
-                    if (tick % 400 == 0) {
-                        p.playSound(p.getLocation(), Sound.MUSIC_DISC_5, SoundCategory.RECORDS, 1.0f, 1.0f);
-                    }
-                    tick += 20;
-
+                @Override
+                public void run() {
                     int alive = 0;
                     for (java.util.UUID id : tracked) {
                         var e = Bukkit.getEntity(id);
-                        if (e != null && !e.isDead()) alive++;
+                        if (e != null && !e.isDead())
+                            alive++;
                     }
                     if (alive == 0) {
-                        p.stopSound(Sound.MUSIC_DISC_5, SoundCategory.RECORDS);
+                        p.stopAllSounds();
+                        p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, 1.0f,
+                                1.0f);
+
+                        // Uhrzeit auf Tag setzen
+                        world.setTime(1000); // 1000 = Morgens, voller Tag
+                        world.setStorm(false);
+                        world.setThundering(false);
+                        world.setWeatherDuration(0);
+
                         p.sendMessage(ChatColor.GREEN + "Horde besiegt.");
+
                         cancel();
                     }
                 }
             }.runTaskTimer(this, 0L, 20L);
 
+            return true;
+        }
+
+        if (cmd.getName().equalsIgnoreCase("reset")) {
+            World world = p.getWorld();
+            int killed = 0;
+            for (Entity entity : world.getEntities()) {
+                // Nur feindliche Mobs töten
+                if (entity instanceof Monster ||
+                        entity instanceof Shulker ||
+                        entity instanceof Slime ||
+                        entity instanceof Phantom ||
+                        entity instanceof EnderDragon ||
+                        entity instanceof Wither) {
+                    entity.remove();
+                    killed++;
+                }
+            }
+            for (org.bukkit.entity.Entity entity : world.getEntities()) {
+                if (entity instanceof Chicken chicken && !chicken.getPassengers().isEmpty()) {
+                    chicken.remove();
+                    killed++;
+                }
+            }
+
+            // Lichtblöcke in der Umgebung entfernen
+            Location playerLoc = p.getLocation();
+            int radius = 50;
+            for (int x = -radius; x <= radius; x++) {
+                for (int y = -radius; y <= radius; y++) {
+                    for (int z = -radius; z <= radius; z++) {
+                        Block block = world.getBlockAt(
+                            playerLoc.getBlockX() + x,
+                            playerLoc.getBlockY() + y,
+                            playerLoc.getBlockZ() + z
+                        );
+                        if (block.getType() == Material.LIGHT) {
+                            block.setType(Material.AIR);
+                        }
+                    }
+                }
+            }
+
+            // Uhrzeit auf Tag setzen
+            world.setTime(1000); // 1000 = Morgens, voller Tag
+            world.setStorm(false);
+            world.setThundering(false);
+            world.setWeatherDuration(0);
+
+            p.sendMessage(ChatColor.DARK_RED + "" + killed + " Gegner getötet.");
             return true;
         }
 
@@ -309,7 +389,49 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
     // HIRSCH
     private void wardenTrySet(Warden w, Attribute attr, double value) {
         var mod = w.getAttribute(attr);
-        if (mod != null) mod.setBaseValue(value);
+        if (mod != null)
+            mod.setBaseValue(value);
+    }
+
+    private boolean isTreeBlock(Material type) {
+        return switch (type) {
+            case OAK_LOG, SPRUCE_LOG, BIRCH_LOG, JUNGLE_LOG, ACACIA_LOG, DARK_OAK_LOG,
+                    MANGROVE_LOG, CHERRY_LOG, CRIMSON_STEM, WARPED_STEM,
+                    OAK_WOOD, SPRUCE_WOOD, BIRCH_WOOD, JUNGLE_WOOD, ACACIA_WOOD, DARK_OAK_WOOD,
+                    MANGROVE_WOOD, CHERRY_WOOD, CRIMSON_HYPHAE, WARPED_HYPHAE,
+                    OAK_LEAVES, SPRUCE_LEAVES, BIRCH_LEAVES, JUNGLE_LEAVES,
+                    ACACIA_LEAVES, DARK_OAK_LEAVES, MANGROVE_LEAVES, CHERRY_LEAVES,
+                    AZALEA_LEAVES, FLOWERING_AZALEA_LEAVES ->
+                true;
+            default -> false;
+        };
+    }
+
+    private void spawnHirsch(Player p) {
+        // Zielposition: 5 Blöcke (≈ Meter) in Blickrichtung
+        Vector dir = p.getLocation().getDirection().normalize().multiply(5);
+        var spawnLoc = p.getLocation().clone().add(dir);
+        spawnLoc.setY(Math.floor(spawnLoc.getY())); // auf Blockhöhe
+
+        var world = p.getWorld();
+        var ent = world.spawnEntity(spawnLoc, EntityType.WARDEN);
+        if (!(ent instanceof Warden warden)) {
+            p.sendMessage("Konnte keinen Warden spawnen.");
+            return;
+        }
+
+        // Name + Sichtbarkeit
+        warden.customName(Component.text("Hirsch", NamedTextColor.DARK_GREEN));
+        warden.setCustomNameVisible(true);
+
+        // Standard-Sounds NICHT unterdrücken
+        warden.setSilent(false);
+
+        // Attribute anpassen (Beispiele – tune nach Wunsch)
+        warden.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(3.5);
+        warden.getAttribute(Attribute.ATTACK_DAMAGE).setBaseValue(15.0);
+        warden.getAttribute(Attribute.FOLLOW_RANGE).setBaseValue(32.0);
+        warden.getAttribute(Attribute.KNOCKBACK_RESISTANCE).setBaseValue(1.0);
     }
 
 
