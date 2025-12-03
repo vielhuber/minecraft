@@ -8,7 +8,6 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,6 +23,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
@@ -33,12 +33,10 @@ import org.bukkit.entity.Vindicator;
 import org.bukkit.entity.Zombie;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.entity.Monster;
-import org.bukkit.entity.Shulker;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.Phantom;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Wither;
-import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Entity;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -108,6 +106,15 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
             java.util.Random rnd = new java.util.Random();
             java.util.List<java.util.UUID> tracked = new java.util.ArrayList<>();
 
+            // Team erstellen für Horde (verhindert Friendly Fire)
+            org.bukkit.scoreboard.Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+            org.bukkit.scoreboard.Team hordeTeam = scoreboard.getTeam("horde");
+            if (hordeTeam == null) {
+                hordeTeam = scoreboard.registerNewTeam("horde");
+            }
+            hordeTeam.setOption(org.bukkit.scoreboard.Team.Option.COLLISION_RULE, org.bukkit.scoreboard.Team.OptionStatus.NEVER);
+            hordeTeam.setAllowFriendlyFire(false);
+
             // zufällige Boden-Position nahe der Basis
             java.util.function.Supplier<Location> randLoc = () -> {
                 int x = base.getBlockX() + rnd.nextInt(11) - 5;
@@ -125,6 +132,8 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
                 zombie.setTarget(p);
                 chicken.addPassenger(zombie);
                 tracked.add(zombie.getUniqueId());
+                hordeTeam.addEntry(zombie.getUniqueId().toString());
+                hordeTeam.addEntry(chicken.getUniqueId().toString());
             }
 
             // 5 Vindicators
@@ -133,6 +142,7 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
                 Vindicator v = (Vindicator) world.spawnEntity(loc, EntityType.VINDICATOR);
                 v.setTarget(p);
                 tracked.add(v.getUniqueId());
+                hordeTeam.addEntry(v.getUniqueId().toString());
             }
 
             // 7 Shulker (bleiben eher stationär, schießen aber auf das Ziel)
@@ -141,11 +151,16 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
                 Shulker s = (Shulker) world.spawnEntity(loc, EntityType.SHULKER);
                 s.setTarget(p);
                 tracked.add(s.getUniqueId());
+                hordeTeam.addEntry(s.getUniqueId().toString());
             }
 
             // 5 Hirsche
             for (int i = 0; i < 5; i++) {
-                spawnHirsch(p);
+                Warden warden = spawnHirsch(p);
+                if (warden != null) {
+                    tracked.add(warden.getUniqueId());
+                    hordeTeam.addEntry(warden.getUniqueId().toString());
+                }
             }
 
             // Uhrzeit auf Nacht setzen
@@ -176,6 +191,11 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
 
             // Explosions-Sounds für Drama
             world.playSound(playerLoc, Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 0.5f);
+
+            // Allen Spielern Ausrüstung geben
+            for (Player player : world.getPlayers()) {
+                ausruestungGeben(player);
+            }
 
             p.sendMessage(ChatColor.DARK_RED + "Die Horde kommt!");
 
@@ -214,6 +234,20 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
 
         if (cmd.getName().equalsIgnoreCase("reset")) {
             World world = p.getWorld();
+
+            // Team löschen
+            org.bukkit.scoreboard.Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+            org.bukkit.scoreboard.Team hordeTeam = scoreboard.getTeam("horde");
+            if (hordeTeam != null) {
+                hordeTeam.unregister();
+            }
+
+            // Inventar aller Spieler leeren
+            for (Player player : world.getPlayers()) {
+                player.getInventory().clear();
+                player.getInventory().setArmorContents(null);
+            }
+
             int killed = 0;
             for (Entity entity : world.getEntities()) {
                 // Nur feindliche Mobs töten
@@ -386,6 +420,60 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
         return item;
     }
 
+    // Ausrüstung für Horde-Kampf
+    private void ausruestungGeben(Player player) {
+        // Inventar leeren
+        player.getInventory().clear();
+        player.getInventory().setArmorContents(null);
+
+        // Machtklinge
+        player.getInventory().addItem(erstelleMachtklinge());
+
+        // Donneraxt
+        player.getInventory().addItem(erstelleDonneraxt());
+
+        // Netherite Schwert (verzaubert)
+        ItemStack schwert = new ItemStack(Material.NETHERITE_SWORD);
+        schwert.addEnchantment(Enchantment.SHARPNESS, 5);
+        schwert.addEnchantment(Enchantment.UNBREAKING, 3);
+        schwert.addEnchantment(Enchantment.FIRE_ASPECT, 2);
+        schwert.addEnchantment(Enchantment.LOOTING, 3);
+        player.getInventory().addItem(schwert);
+
+        // Bogen (verzaubert)
+        ItemStack bogen = new ItemStack(Material.BOW);
+        bogen.addEnchantment(Enchantment.POWER, 5);
+        bogen.addEnchantment(Enchantment.INFINITY, 1);
+        bogen.addEnchantment(Enchantment.FLAME, 1);
+        bogen.addEnchantment(Enchantment.UNBREAKING, 3);
+        player.getInventory().addItem(bogen);
+
+        // Pfeile (mindestens 1 für Infinity)
+        player.getInventory().addItem(new ItemStack(Material.ARROW, 64));
+
+        // Netherite Rüstung (verzaubert)
+        ItemStack helm = new ItemStack(Material.NETHERITE_HELMET);
+        helm.addEnchantment(Enchantment.PROTECTION, 4);
+        helm.addEnchantment(Enchantment.UNBREAKING, 3);
+        player.getInventory().setHelmet(helm);
+
+        ItemStack brustplatte = new ItemStack(Material.NETHERITE_CHESTPLATE);
+        brustplatte.addEnchantment(Enchantment.PROTECTION, 4);
+        brustplatte.addEnchantment(Enchantment.UNBREAKING, 3);
+        player.getInventory().setChestplate(brustplatte);
+
+        ItemStack hose = new ItemStack(Material.NETHERITE_LEGGINGS);
+        hose.addEnchantment(Enchantment.PROTECTION, 4);
+        hose.addEnchantment(Enchantment.UNBREAKING, 3);
+        player.getInventory().setLeggings(hose);
+
+        ItemStack stiefel = new ItemStack(Material.NETHERITE_BOOTS);
+        stiefel.addEnchantment(Enchantment.PROTECTION, 4);
+        stiefel.addEnchantment(Enchantment.UNBREAKING, 3);
+        stiefel.addEnchantment(Enchantment.FEATHER_FALLING, 4);
+        player.getInventory().setBoots(stiefel);
+    }
+
     // HIRSCH
     private void wardenTrySet(Warden w, Attribute attr, double value) {
         var mod = w.getAttribute(attr);
@@ -407,7 +495,7 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
         };
     }
 
-    private void spawnHirsch(Player p) {
+    private Warden spawnHirsch(Player p) {
         // Zielposition: 5 Blöcke (≈ Meter) in Blickrichtung
         Vector dir = p.getLocation().getDirection().normalize().multiply(5);
         var spawnLoc = p.getLocation().clone().add(dir);
@@ -417,7 +505,7 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
         var ent = world.spawnEntity(spawnLoc, EntityType.WARDEN);
         if (!(ent instanceof Warden warden)) {
             p.sendMessage("Konnte keinen Warden spawnen.");
-            return;
+            return null;
         }
 
         // Name + Sichtbarkeit
@@ -432,6 +520,8 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
         warden.getAttribute(Attribute.ATTACK_DAMAGE).setBaseValue(15.0);
         warden.getAttribute(Attribute.FOLLOW_RANGE).setBaseValue(32.0);
         warden.getAttribute(Attribute.KNOCKBACK_RESISTANCE).setBaseValue(1.0);
+
+        return warden;
     }
 
 

@@ -32,7 +32,7 @@ for /f "skip=1 tokens=* usebackq" %%a in (`certutil -hashfile ..\data.zip SHA1`)
 set "HASH=%HASH: =%"
 echo SHA1: %HASH%
 curl --insecure -T "..\data.zip" -u "%DATA_USER%:%DATA_PASS%" "ftp://%DATA_HOST%%DATA_PATH%/%HASH%.zip"
-REM del ..\data.zip
+del ..\data.zip
 
 if /i "%MODE%"=="PROD" goto :prod
 if /i "%MODE%"=="LOCAL" goto :local
