@@ -25,6 +25,8 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 import org.bukkit.entity.Chicken;
@@ -155,7 +157,7 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
             }
 
             // 5 Hirsche
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 3; i++) {
                 Warden warden = spawnHirsch(p);
                 if (warden != null) {
                     tracked.add(warden.getUniqueId());
@@ -171,6 +173,7 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
 
             // Statt Bäume anzünden: Dramatische Effekte ohne Zerstörung
             Location playerLoc = p.getLocation();
+            /*
             int radius = 30;
             java.util.List<Block> placedLights = new java.util.ArrayList<>();
             for (int i = 0; i < 50; i++) {
@@ -188,15 +191,25 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
                     placedLights.add(block);
                 }
             }
+            */
 
             // Explosions-Sounds für Drama
             world.playSound(playerLoc, Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 0.5f);
 
+            // KeepInventory aktivieren
+            world.setGameRule(GameRule.KEEP_INVENTORY, true);
+
             // Allen Spielern Ausrüstung geben
             for (Player player : world.getPlayers()) {
                 ausruestungGeben(player);
+                // Unendliche Night Vision (Integer.MAX_VALUE = praktisch unendlich, infinite=true)
+                player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, PotionEffect.INFINITE_DURATION, 0, false, false, true));
             }
 
+            p.sendMessage(ChatColor.DARK_RED + "Die Horde kommt!");
+            p.sendMessage(ChatColor.DARK_RED + "Die Horde kommt!");
+            p.sendMessage(ChatColor.DARK_RED + "Die Horde kommt!");
+            p.sendMessage(ChatColor.DARK_RED + "Die Horde kommt!");
             p.sendMessage(ChatColor.DARK_RED + "Die Horde kommt!");
 
             // Grausame Musik bis alle tot sind
@@ -205,6 +218,14 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
             new BukkitRunnable() {
                 @Override
                 public void run() {
+                    // Warden-Darkness-Effekt entfernen und Night Vision aufrechterhalten
+                    for (Player player : world.getPlayers()) {
+                        player.removePotionEffect(PotionEffectType.DARKNESS);
+                        if (!player.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, PotionEffect.INFINITE_DURATION, 0, false, false, true));
+                        }
+                    }
+
                     int alive = 0;
                     for (java.util.UUID id : tracked) {
                         var e = Bukkit.getEntity(id);
@@ -242,10 +263,14 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
                 hordeTeam.unregister();
             }
 
-            // Inventar aller Spieler leeren
+            // KeepInventory deaktivieren
+            world.setGameRule(GameRule.KEEP_INVENTORY, false);
+
+            // Inventar aller Spieler leeren und Effekte entfernen
             for (Player player : world.getPlayers()) {
                 player.getInventory().clear();
                 player.getInventory().setArmorContents(null);
+                player.removePotionEffect(PotionEffectType.NIGHT_VISION);
             }
 
             int killed = 0;
@@ -451,6 +476,21 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
         // Pfeile (mindestens 1 für Infinity)
         player.getInventory().addItem(new ItemStack(Material.ARROW, 64));
 
+        // 64 Goldene Äpfel (Enchanted)
+        player.getInventory().addItem(new ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 64));
+
+        // Ein Totem
+        player.getInventory().addItem(new ItemStack(Material.TOTEM_OF_UNDYING, 1));
+
+        // Sehr gutes Schild - direkt in Off-Hand ausgerüstet
+        ItemStack schild = new ItemStack(Material.SHIELD);
+        schild.addEnchantment(Enchantment.UNBREAKING, 3);
+        schild.addEnchantment(Enchantment.MENDING, 1);
+        player.getInventory().setItemInOffHand(schild);
+
+        // Totem ins Inventar (nicht Off-Hand, da Schild dort ist)
+        player.getInventory().addItem(new ItemStack(Material.TOTEM_OF_UNDYING));
+
         // Netherite Rüstung (verzaubert)
         ItemStack helm = new ItemStack(Material.NETHERITE_HELMET);
         helm.addEnchantment(Enchantment.PROTECTION, 4);
@@ -461,6 +501,13 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
         brustplatte.addEnchantment(Enchantment.PROTECTION, 4);
         brustplatte.addEnchantment(Enchantment.UNBREAKING, 3);
         player.getInventory().setChestplate(brustplatte);
+
+        // Elytra ins Inventar (verzaubert) + Feuerwerksraketen
+        ItemStack elytra = new ItemStack(Material.ELYTRA);
+        elytra.addEnchantment(Enchantment.UNBREAKING, 3);
+        elytra.addEnchantment(Enchantment.MENDING, 1);
+        player.getInventory().addItem(elytra);
+        player.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 64));
 
         ItemStack hose = new ItemStack(Material.NETHERITE_LEGGINGS);
         hose.addEnchantment(Enchantment.PROTECTION, 4);
