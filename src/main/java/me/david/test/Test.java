@@ -102,7 +102,7 @@ public final class Test extends JavaPlugin implements Listener, CommandExecutor 
 
         if (cmd.getName().equalsIgnoreCase("horde")) {
             World world = p.getWorld();
-            Location base = p.getLocation().add(p.getLocation().getDirection().normalize().multiply(15));
+            Location base = p.getLocation().add(p.getLocation().getDirection().normalize().multiply(30));
             java.util.Random rnd = new java.util.Random();
             java.util.List<java.util.UUID> tracked = new java.util.ArrayList<>();
 
