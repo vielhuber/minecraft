@@ -2,14 +2,14 @@
 
 A custom Minecraft Paper plugin featuring epic weapons, challenging horde battles, and custom resource packs. Built for Minecraft 1.21.
 
-## ✨ Features
+## Features
 
--   **🗡️ Custom Weapons**
+-   **Custom Weapons**
 
     -   **Machtklinge** - Powerful sword with instant block breaking
     -   **Donneraxt** - Thunder axe that summons lightning strikes
 
--   **👹 Horde Mode** (`/horde`)
+-   **Horde Mode** (`/horde`)
 
     -   Spawns waves of enemies: Chicken Jockeys, Vindicators, Shulkers & custom "Hirsch" (Warden)
     -   Full combat gear: Netherite armor, enchanted weapons, Elytra, Golden Apples, Totems
@@ -17,16 +17,18 @@ A custom Minecraft Paper plugin featuring epic weapons, challenging horde battle
     -   Team system prevents friendly fire between mobs
     -   Keep inventory enabled during battle
 
--   **🎨 Resource Pack Integration**
+-   **Resource Pack Integration**
 
     -   Custom weapon textures
     -   Custom sounds
     -   Automatic SHA1 hash management
 
--   **🛠️ Developer Tools**
+-   **Developer Tools**
     -   `/reset` - Clear all mobs, restore day, reset inventory
     -   `/hirsch` - Spawn custom Warden boss
     -   Build scripts for local and production deployment
+
+## Development
 
 ## Setup
 
