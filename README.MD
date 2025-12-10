@@ -60,7 +60,7 @@ A custom Minecraft Paper plugin featuring epic weapons, challenging horde battle
 -   JDK: 21 (again afterwards if necessary: "Set up SDK:")
 -   Build (local + production)
 -   Gradle > Tasks > build > build
--   Copy `/test/build/libs/\*.jar` to `/plugins`
+-   Copy `/test/build/libs/*.jar` to `/plugins`
 -   Restart server cleanly (not `/reload`)
 -   Set up local server
     -   Download Paper at https://papermc.io/downloads/paper
