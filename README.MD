@@ -30,7 +30,7 @@ A custom Minecraft Paper plugin featuring epic weapons, challenging horde battle
 
 ## Development
 
-## Setup
+### Setup
 
 -   Java
     -   Install Adoptium: https://adoptium.net/en-GB/temurin/releases/?os=windows&package=jdk&version=21
@@ -79,7 +79,7 @@ A custom Minecraft Paper plugin featuring epic weapons, challenging horde battle
     -   Test with `/time set day`
 -   Start Minecraft Launcher and connect to `localhost`
 
-## Usage
+### Usage
 
 -   VSCode (WSL)
     -   `cd $(wslpath "$(cmd.exe /c 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')")/Minecraft/test`
@@ -88,6 +88,8 @@ A custom Minecraft Paper plugin featuring epic weapons, challenging horde battle
     -   `cd %userprofile%/Minecraft/test/scripts`
     -   `script.bat local`
     -   `script.bat prod`
+
+## Notes
 
 ### Server configuration
 
