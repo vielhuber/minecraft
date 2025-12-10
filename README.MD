@@ -53,22 +53,22 @@ A custom Minecraft Paper plugin featuring epic weapons, challenging horde battle
             -   Tools > Actions on Save > Reformat Code + Optimize Imports
 -   New project
 -   Project name: "test"
--   Location: %userprofile%/Minecraft
+-   Location: `%userprofile%/Minecraft`
 -   Plugin + Paper + Gradle + Java
 -   Minecraft version: 1.21.8
 -   Group ID: me.42
 -   JDK: 21 (again afterwards if necessary: "Set up SDK:")
 -   Build (local + production)
 -   Gradle > Tasks > build > build
--   Copy /test/build/libs/\*.jar to /plugins
+-   Copy `/test/build/libs/\*.jar` to `/plugins`
 -   Restart server cleanly (not `/reload`)
 -   Set up local server
     -   Download Paper at https://papermc.io/downloads/paper
-    -   Copy \*.jar to %userprofile%/Minecraft/paper/paper.jar
+    -   Copy `*.jar` to `%userprofile%/Minecraft/paper/paper.jar`
     -   Start with `java -Xms4G -Xmx4G -jar paper.jar --nogui`
     -   Edit eula.txt: eula=true
     -   Connect to "localhost" in Vanilla Minecraft
-    -   Upgrade: Simply download the new \*.jar and replace paper.jar
+    -   Upgrade: Simply download the new `*.jar` and replace `paper.jar`
 -   Set up production server
     -   Book server at https://mine-hoster.de
     -   Administration: https://gamepanel.mine-hoster.de
