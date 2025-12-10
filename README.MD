@@ -66,8 +66,8 @@ A custom Minecraft Paper plugin featuring epic weapons, challenging horde battle
     -   Download Paper at https://papermc.io/downloads/paper
     -   Copy `*.jar` to `%userprofile%/Minecraft/paper/paper.jar`
     -   Start with `java -Xms4G -Xmx4G -jar paper.jar --nogui`
-    -   Edit eula.txt: eula=true
-    -   Connect to "localhost" in Vanilla Minecraft
+    -   Edit `eula.txt`: `eula=true`
+    -   Connect to `localhost` in Vanilla Minecraft
     -   Upgrade: Simply download the new `*.jar` and replace `paper.jar`
 -   Set up production server
     -   Book server at https://mine-hoster.de
