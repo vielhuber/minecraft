@@ -154,6 +154,11 @@ public final class Fight implements Listener, CommandExecutor {
         // Musik stoppen
         stopMusic();
 
+        // Regen stoppen
+        World world = Bukkit.getWorlds().get(0);
+        world.setStorm(false);
+        world.setThundering(false);
+
         // Alle Spieler zurück in Spectator setzen
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.setGameMode(GameMode.SPECTATOR);
@@ -171,7 +176,7 @@ public final class Fight implements Listener, CommandExecutor {
 
         // Alle Trident-Verzauberungen hinzufügen
         trident.addEnchantment(Enchantment.IMPALING, 5);        // Aufspießen
-        trident.addEnchantment(Enchantment.LOYALTY, 3);         // Treue
+        trident.addEnchantment(Enchantment.RIPTIDE, 3);         // Riptide
         trident.addEnchantment(Enchantment.CHANNELING, 1);      // Kanalisierung
         trident.addEnchantment(Enchantment.UNBREAKING, 3);      // Haltbarkeit
         trident.addEnchantment(Enchantment.MENDING, 1);         // Reparatur
@@ -222,6 +227,10 @@ public final class Fight implements Listener, CommandExecutor {
         World world = Bukkit.getWorlds().get(0);
         Location spawnLocation = world.getSpawnLocation();
 
+        // Regen starten
+        world.setStorm(true);
+        world.setThundering(true);
+
         // Wegläufer ausstatten
         if (weglaeufer != null) {
             weglaeufer.setGameMode(GameMode.SURVIVAL);
@@ -233,7 +242,9 @@ public final class Fight implements Listener, CommandExecutor {
             weglaeufer.setFoodLevel(20);
             weglaeufer.setSaturation(20.0f);
 
-            weglaeufer.teleport(spawnLocation);
+            // Weiter weg spawnen (20 Blöcke entfernt)
+            Location weglaeuferLocation = spawnLocation.clone().add(20, 0, 0);
+            weglaeufer.teleport(weglaeuferLocation);
 
             // Wassereimer
             ItemStack waterBucket = new ItemStack(Material.WATER_BUCKET);
@@ -313,7 +324,30 @@ public final class Fight implements Listener, CommandExecutor {
             ItemStack goldenApples = new ItemStack(Material.GOLDEN_APPLE, 64);
             hunter.getInventory().addItem(goldenApples);
 
-            // Keine Rüstung für Hunter
+            // Netherite Rüstung mit vollen Verzauberungen
+            ItemStack netheriteHelmet = new ItemStack(Material.NETHERITE_HELMET);
+            ItemStack netheriteChestplate = new ItemStack(Material.NETHERITE_CHESTPLATE);
+            ItemStack netheriteLeggings = new ItemStack(Material.NETHERITE_LEGGINGS);
+            ItemStack netheriteBoots = new ItemStack(Material.NETHERITE_BOOTS);
+
+            netheriteHelmet.addEnchantment(Enchantment.PROTECTION, 4);
+            netheriteHelmet.addEnchantment(Enchantment.UNBREAKING, 3);
+            netheriteHelmet.addEnchantment(Enchantment.MENDING, 1);
+            netheriteChestplate.addEnchantment(Enchantment.PROTECTION, 4);
+            netheriteChestplate.addEnchantment(Enchantment.UNBREAKING, 3);
+            netheriteChestplate.addEnchantment(Enchantment.MENDING, 1);
+            netheriteLeggings.addEnchantment(Enchantment.PROTECTION, 4);
+            netheriteLeggings.addEnchantment(Enchantment.UNBREAKING, 3);
+            netheriteLeggings.addEnchantment(Enchantment.MENDING, 1);
+            netheriteBoots.addEnchantment(Enchantment.PROTECTION, 4);
+            netheriteBoots.addEnchantment(Enchantment.UNBREAKING, 3);
+            netheriteBoots.addEnchantment(Enchantment.FEATHER_FALLING, 4);
+            netheriteBoots.addEnchantment(Enchantment.MENDING, 1);
+
+            hunter.getInventory().setHelmet(netheriteHelmet);
+            hunter.getInventory().setChestplate(netheriteChestplate);
+            hunter.getInventory().setLeggings(netheriteLeggings);
+            hunter.getInventory().setBoots(netheriteBoots);
         }
 
         // Fight-Daten setzen
