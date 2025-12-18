@@ -26,9 +26,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public final class Reset implements Listener, CommandExecutor {
 
     private JavaPlugin plugin;
+    private Fight fight;
 
-    public void register(JavaPlugin plugin) {
+    public void register(JavaPlugin plugin, Fight fight) {
         this.plugin = plugin;
+        this.fight = fight;
 
         this.plugin.getCommand("reset").setExecutor(this);
 
@@ -44,6 +46,9 @@ public final class Reset implements Listener, CommandExecutor {
 
 
         if (cmd.getName().equalsIgnoreCase("reset")) {
+            // Manhunt stoppen falls aktiv
+            fight.stopFight();
+
             World world = p.getWorld();
 
             // Team löschen
@@ -56,10 +61,23 @@ public final class Reset implements Listener, CommandExecutor {
             // KeepInventory deaktivieren
             world.setGameRule(GameRule.KEEP_INVENTORY, false);
 
-            // Inventar aller Spieler leeren und Effekte entfernen
+            // Alle Spieler aus Spectator holen, Inventar leeren, aufladen und Effekte entfernen
             for (Player player : world.getPlayers()) {
+                // Aus Spectator Modus holen
+                if (player.getGameMode() == GameMode.SPECTATOR) {
+                    player.setGameMode(GameMode.SURVIVAL);
+                }
+
+                // Inventar und Rüstung leeren
                 player.getInventory().clear();
                 player.getInventory().setArmorContents(null);
+
+                // Herzen und Essen auffüllen
+                player.setHealth(20.0);
+                player.setFoodLevel(20);
+                player.setSaturation(20.0f);
+
+                // Effekte entfernen
                 player.removePotionEffect(PotionEffectType.NIGHT_VISION);
             }
 

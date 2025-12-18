@@ -31,11 +31,11 @@ public final class Test extends JavaPlugin implements Listener {
         horde = new Horde();
         horde.register(this, hirsch, donneraxt, machtklinge);
 
-        reset = new Reset();
-        reset.register(this);
-
         fight = new Fight();
-        fight.register(this);
+        fight.register(this, machtklinge, donneraxt);
+
+        reset = new Reset();
+        reset.register(this, fight);
     }
 
 }

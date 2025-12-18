@@ -6,8 +6,22 @@ A custom Minecraft Paper plugin featuring epic weapons, challenging horde battle
 
 -   **Custom Weapons**
 
-    -   **Machtklinge** - Powerful sword with instant block breaking
     -   **Donneraxt** - Thunder axe that summons lightning strikes
+    -   **Machtklinge** - Powerful sword with instant block breaking
+
+-   **Manhunt Mode** (`/fight`)
+
+    -   3-minute PvP battle: Hunter vs Wegläufer
+    -   **Hunter Equipment**: Trident, Maze, Donneraxt, 64 Golden Apples (no armor)
+    -   **Wegläufer Equipment**: Water bucket, Diamond armor, Diamond shield, 64 Golden Carrots, 3 Ender Pearls, 64 Cobwebs
+    -   **Scoring System**:
+        -   Wegläufer survives 3 minutes: +1 point
+        -   Hunter kills Wegläufer: +1 point
+        -   Wegläufer kills Hunter: +2 points
+    -   Background music during fight (Pigstep)
+    -   Timer notifications every minute and at critical moments
+    -   Spectator mode for non-participating players
+    -   Scores persist across multiple rounds
 
 -   **Horde Mode** (`/horde`)
 
@@ -19,16 +33,27 @@ A custom Minecraft Paper plugin featuring epic weapons, challenging horde battle
 
 -   **Resource Pack Integration**
 
-    -   Custom weapon textures
+    -   Custom weapon textures and models
     -   Custom sounds
     -   Automatic SHA1 hash management
+    -   Server-side deployment
 
 -   **Developer Tools**
-    -   `/reset` - Clear all mobs, restore day, reset inventory
+    -   `/reset` - Clear all mobs, stop Manhunt, restore players from Spectator, heal & feed all players, reset inventory
     -   `/hirsch` - Spawn custom Warden boss
-    -   Build scripts for local and production deployment
+    -   Build scripts for local and production deployment with automatic server-icon and server.properties sync
 
 ## Development
+
+### Usage
+
+-   VSCode (WSL)
+    -   `cd $(wslpath "$(cmd.exe /c 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')")/Minecraft/test`
+    -   `code .`
+-   Scripts (cmd without admin)
+    -   `cd %userprofile%/Minecraft/test/scripts`
+    -   `script.bat local`
+    -   `script.bat prod`
 
 ### Setup
 
@@ -78,16 +103,6 @@ A custom Minecraft Paper plugin featuring epic weapons, challenging horde battle
     -   Also write the `ops.json` correctly
     -   Test with `/time set day`
 -   Start Minecraft Launcher and connect to `localhost`
-
-### Usage
-
--   VSCode (WSL)
-    -   `cd $(wslpath "$(cmd.exe /c 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')")/Minecraft/test`
-    -   `code .`
--   Scripts (cmd without admin)
-    -   `cd %userprofile%/Minecraft/test/scripts`
-    -   `script.bat local`
-    -   `script.bat prod`
 
 ## Notes
 

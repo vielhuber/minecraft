@@ -40,8 +40,10 @@ goto :local
 
 :local
 echo === LOCAL ===
-powershell -Command "(Get-Content '%userprofile%\Minecraft\paper\server.properties') -replace '^resource-pack-sha1=.*$', 'resource-pack-sha1=%HASH%' | Set-Content '%userprofile%\Minecraft\paper\server.properties'"
-powershell -Command "(Get-Content '%userprofile%\Minecraft\paper\server.properties') -replace '^resource-pack=.*$', 'resource-pack=%DATA_URL%/%HASH%.zip' | Set-Content '%userprofile%\Minecraft\paper\server.properties'"
+REM Copy server-icon.png
+copy /Y "%userprofile%\Minecraft\test\scripts\server-icon.png" "%userprofile%\Minecraft\paper\server-icon.png"
+REM Merge server.properties
+powershell -Command "$target='%userprofile%\Minecraft\paper\server.properties'; $source='%userprofile%\Minecraft\test\scripts\server.properties'; $props=@{}; if(Test-Path $target){Get-Content $target | ForEach-Object{if($_ -match '^([^#=]+)=(.*)$'){$props[$matches[1].Trim()]=$matches[2]}}}; Get-Content $source | ForEach-Object{if($_ -match '^([^#=]+)=(.*)$'){$props[$matches[1].Trim()]=$matches[2]}}; $props['resource-pack-sha1']='%HASH%'; $props['resource-pack']='%DATA_URL%/%HASH%.zip'; $props.GetEnumerator() | ForEach-Object{\"$($_.Key)=$($_.Value)\"} | Set-Content $target"
 copy /Y %userprofile%\Minecraft\test\build\libs\*.jar %userprofile%\Minecraft\paper\plugins\
 cd %userprofile%/Minecraft/paper
 start "Minecraft Server" /D "%userprofile%\Minecraft\paper" java -Xms4G -Xmx4G -jar paper.jar --nogui
@@ -49,9 +51,11 @@ goto :cleanup
 
 :prod
 echo === PROD ===
+REM Copy server-icon.png
+pscp -P %SERVER_PORT% -pw "%SERVER_PASS%" "%userprofile%\Minecraft\test\scripts\server-icon.png" "%SERVER_USER%@%SERVER_HOST%:/server-icon.png"
+REM Merge server.properties
 pscp -P %SERVER_PORT% -pw "%SERVER_PASS%" "%SERVER_USER%@%SERVER_HOST%:/server.properties" "..\server.properties"
-powershell -Command "(Get-Content '..\server.properties') -replace '^resource-pack-sha1=.*$', 'resource-pack-sha1=%HASH%' | Set-Content '..\server.properties'"
-powershell -Command "(Get-Content '..\server.properties') -replace '^resource-pack=.*$', 'resource-pack=%DATA_URL%/%HASH%.zip' | Set-Content '..\server.properties'"
+powershell -Command "$target='..\server.properties'; $source='%userprofile%\Minecraft\test\scripts\server.properties'; $props=@{}; if(Test-Path $target){Get-Content $target | ForEach-Object{if($_ -match '^([^#=]+)=(.*)$'){$props[$matches[1].Trim()]=$matches[2]}}}; Get-Content $source | ForEach-Object{if($_ -match '^([^#=]+)=(.*)$'){$props[$matches[1].Trim()]=$matches[2]}}; $props['resource-pack-sha1']='%HASH%'; $props['resource-pack']='%DATA_URL%/%HASH%.zip'; $props.GetEnumerator() | ForEach-Object{\"$($_.Key)=$($_.Value)\"} | Set-Content $target"
 pscp -P %SERVER_PORT% -pw "%SERVER_PASS%" "..\server.properties" "%SERVER_USER%@%SERVER_HOST%:/server.properties"
 del ..\server.properties
 pscp -P %SERVER_PORT% -pw "%SERVER_PASS%" "%userprofile%\Minecraft\test\build\libs\*.jar" "%SERVER_USER%@%SERVER_HOST%:/plugins/"
