@@ -251,6 +251,10 @@ public final class Fight implements Listener, CommandExecutor {
             ItemStack cobwebs = new ItemStack(Material.COBWEB, 64);
             weglaeufer.getInventory().addItem(cobwebs);
 
+            // Erdblöcke
+            ItemStack dirt = new ItemStack(Material.DIRT, 64);
+            weglaeufer.getInventory().addItem(dirt);
+
             // Diamant Schild mit Verzauberungen
             ItemStack shield = new ItemStack(Material.SHIELD);
             shield.addEnchantment(Enchantment.UNBREAKING, 3);
