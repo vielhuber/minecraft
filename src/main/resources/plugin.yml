@@ -21,3 +21,6 @@ commands:
     fight:
         description: Startet einen Man-Hunt Kampf
         usage: /fight
+    stampfer:
+        description: Gibt allen Spielern ein Mace
+        usage: /stampfer

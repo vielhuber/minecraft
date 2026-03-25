@@ -43,6 +43,11 @@ public final class Donneraxt implements Listener, CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (!sender.isOp()) {
+            sender.sendMessage(ChatColor.RED + "Du hast keine Berechtigung für diesen Befehl!");
+            return true;
+        }
+
         if (!(sender instanceof Player p)) {
             sender.sendMessage("Nur im Spiel nutzbar!");
             return true;

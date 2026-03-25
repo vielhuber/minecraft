@@ -16,11 +16,15 @@ public final class Test extends JavaPlugin implements Listener {
     private Horde horde;
     private Reset reset;
     private Fight fight;
+    private Mace mace;
 
     @Override
     public void onEnable() {
         donneraxt = new Donneraxt();
         donneraxt.register(this);
+
+        mace = new Mace();
+        mace.register(this);
 
         machtklinge = new Machtklinge();
         machtklinge.register(this);

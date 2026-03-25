@@ -48,6 +48,11 @@ public final class Fight implements Listener, CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (!sender.isOp()) {
+            sender.sendMessage("Du hast keine Berechtigung für diesen Befehl!");
+            return true;
+        }
+
         if (cmd.getName().equalsIgnoreCase("fight")) {
             startFight();
         }

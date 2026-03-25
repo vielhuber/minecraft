@@ -1,3 +1,4 @@
+chcp 65001 >nul
 setlocal disabledelayedexpansion
 
 set "ORIGINAL_DIR=%cd%"
@@ -31,7 +32,11 @@ for /f "skip=1 tokens=* usebackq" %%a in (`certutil -hashfile ..\data.zip SHA1`)
 :hashDone
 set "HASH=%HASH: =%"
 echo SHA1: %HASH%
-curl --insecure -T "..\data.zip" -u "%DATA_USER%:%DATA_PASS%" "ftp://%DATA_HOST%%DATA_PATH%/%HASH%.zip"
+REM write credentials to temp file to avoid special character issues on the command line
+(echo user = "%DATA_USER%:%DATA_PASS%") > "%TEMP%\curl_ftp.cfg"
+curl --insecure -T "..\data.zip" --config "%TEMP%\curl_ftp.cfg" "ftp://%DATA_HOST%%DATA_PATH%/%HASH%.zip"
+echo curl --insecure -T "..\data.zip" --config "%TEMP%\curl_ftp.cfg" "ftp://%DATA_HOST%%DATA_PATH%/%HASH%.zip"
+del "%TEMP%\curl_ftp.cfg"
 del ..\data.zip
 
 if /i "%MODE%"=="PROD" goto :prod
@@ -47,6 +52,7 @@ powershell -Command "$target='%userprofile%\Minecraft\paper\server.properties'; 
 copy /Y %userprofile%\Minecraft\test\build\libs\*.jar %userprofile%\Minecraft\paper\plugins\
 cd %userprofile%/Minecraft/paper
 start "Minecraft Server" /D "%userprofile%\Minecraft\paper" java -Xms4G -Xmx4G -jar paper.jar --nogui
+echo start "Minecraft Server" /D "%userprofile%\Minecraft\paper" java -Xms4G -Xmx4G -jar paper.jar --nogui
 goto :cleanup
 
 :prod
