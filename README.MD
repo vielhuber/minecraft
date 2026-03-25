@@ -7,10 +7,10 @@ A custom Minecraft Paper plugin featuring epic weapons, challenging horde battle
 - **Custom Weapons**
     - **Donneraxt** - Thunder axe that summons lightning strikes
     - **Machtklinge** - Powerful sword with instant block breaking
-    - **Mace (modifiziert)** - Vanilla Mace mit eingeschränktem Verhalten:
-        - Nicht verzauberbar (Zaubertisch & Amboss blockiert, inkl. Reparieren)
-        - 6 Sekunden Angriffs-Cooldown
-        - Verteilung an alle Spieler via `/stampfer`
+    - **Mace (modified)** - Vanilla Mace with restricted behaviour:
+        - Not enchantable (enchanting table & anvil blocked, incl. repairing)
+        - 6-second attack cooldown
+        - Distribution to all players via `/stampfer`
 
 - **Manhunt Mode** (`/fight`)
     - 3-minute PvP battle: Hunter vs Wegläufer
