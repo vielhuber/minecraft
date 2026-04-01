@@ -1,3 +1,8 @@
+[![GitHub Tag](https://img.shields.io/github/v/tag/vielhuber/minecraft)](https://github.com/vielhuber/minecraft/tags)
+[![Code Style](https://img.shields.io/badge/code_style-psr--12-ff69b4.svg)](https://www.php-fig.org/psr/psr-12/)
+[![License](https://img.shields.io/github/license/vielhuber/minecraft)](https://github.com/vielhuber/minecraft/blob/main/LICENSE.md)
+[![Last Commit](https://img.shields.io/github/last-commit/vielhuber/minecraft)](https://github.com/vielhuber/minecraft/commits)
+
 # ⚔️ minecraft ⚔️
 
 A custom Minecraft Paper plugin featuring epic weapons, challenging horde battles, and custom resource packs. Built for Minecraft 1.21.
